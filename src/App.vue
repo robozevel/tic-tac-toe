@@ -7,8 +7,6 @@
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld.vue'
-
 export default {
   name: 'TickTacToe',
   data () {
@@ -32,9 +30,6 @@ export default {
       this.turn = !this.turn
     }
   }
-  // components: {
-  //   HelloWorld
-  // }
 }
 </script>
 
