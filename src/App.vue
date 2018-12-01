@@ -12,6 +12,12 @@
     <div>
       <span class="message">{{ message }}</span>
       <div v-if="ended" role="button" class="restart" @click="restart">play again</div>
+      <label>
+        <input type="checkbox" v-model="autoplay" /> Play against bot
+      </label>
+      <select v-model="difficulty">
+        <option v-for="(level, title) in levels" :value="level" :key="level">{{ title }}</option>
+      </select>
     </div>
   </main>
 </template>
@@ -22,11 +28,14 @@ export default {
   data () {
     return {
       turn: Math.random() > 0.5,
-      classes: {
-        true: 'x',
-        false: 'o'
+      autoplay: true,
+      board: new Array(9).fill(null),
+      difficulty: 0.5,
+      levels: {
+        hard: 0.25,
+        normal: 0.5,
+        easy: 0.75
       },
-      board: [],
       moves: [
         [0, 1, 2],
         [3, 4, 5],
@@ -36,11 +45,12 @@ export default {
         [2, 5, 8],
         [0, 4, 8],
         [2, 4, 6]
-      ]
+      ],
+      classes: {
+        true: 'x',
+        false: 'o'
+      }
     }
-  },
-  created () {
-    this.restart()
   },
   computed: {
     winningMove () {
@@ -67,6 +77,32 @@ export default {
     },
     restart () {
       this.board = new Array(9).fill(null)
+      this.turn = false
+    },
+    findMove (player, count) {
+      const toCount = (sum, box) => this.board[box] === player ? sum + 1 : sum
+      for (let move of this.moves) {
+        let score = move.reduce(toCount, 0)
+        if (score !== count) continue
+        let i = move.find(box => this.board[box] === null)
+        if (i !== undefined) return i
+      }
+    },
+    findRandomMove () {
+      return [4, 0, 2, 6, 8, 1, 3, 5, 7]
+        .sort(() => Math.random() > this.difficulty ? 1 : -1)
+        .find(box => this.board[box] === null)
+    },
+    play () {
+      this.select(this.findMove(this.turn, 2) || this.findMove(!this.turn, 2) || this.findRandomMove())
+    }
+  },
+  watch: {
+    turn: {
+      immediate: true,
+      handler (player) {
+        if (this.autoplay && player) this.play()
+      }
     }
   }
 }
