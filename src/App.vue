@@ -94,7 +94,16 @@ export default {
         .find(box => this.board[box] === null)
     },
     play () {
-      this.select(this.findMove(this.turn, 2) || this.findMove(!this.turn, 2) || this.findRandomMove())
+      const i = [
+        // winning move
+        this.findMove(this.turn, 2),
+        // defensive move
+        this.findMove(!this.turn, 2),
+        // random move
+        this.findRandomMove()
+      ].find(i => i !== undefined)
+
+      this.select(i)
     }
   },
   watch: {
