@@ -25,10 +25,13 @@
 </template>
 
 <script>
+import { findNextMove, findWinningMove } from './bot'
+
 export default {
   name: 'TickTacToe',
   data () {
     return {
+      // flip coin to select player
       turn: Math.random() > 0.5,
       autoplay: true,
       board: new Array(9).fill(null),
@@ -38,16 +41,6 @@ export default {
         normal: 0.5,
         easy: 0.75
       },
-      moves: [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6]
-      ],
       classes: {
         true: 'x',
         false: 'o'
@@ -56,7 +49,7 @@ export default {
   },
   computed: {
     winningMove () {
-      return this.moves.find(moves => moves.every(i => this.board[i] === this.turn))
+      return findWinningMove(this.board, this.turn)
     },
     winner () {
       return this.winningMove ? this.turn : null
@@ -81,30 +74,8 @@ export default {
       this.board = new Array(9).fill(null)
       this.turn = false
     },
-    findMove (player, count) {
-      const toCount = (sum, box) => this.board[box] === player ? sum + 1 : sum
-      for (let move of this.moves) {
-        let score = move.reduce(toCount, 0)
-        if (score !== count) continue
-        let i = move.find(box => this.board[box] === null)
-        if (i !== undefined) return i
-      }
-    },
-    findRandomMove () {
-      return [4, 0, 2, 6, 8, 1, 3, 5, 7]
-        .sort(() => Math.random() > this.difficulty ? 1 : -1)
-        .find(box => this.board[box] === null)
-    },
     play () {
-      const i = [
-        // winning move
-        this.findMove(this.turn, 2),
-        // defensive move
-        this.findMove(!this.turn, 2),
-        // random move
-        this.findRandomMove()
-      ].find(i => i !== undefined)
-
+      const i = findNextMove(this.board, this.player, this.difficulty)
       this.select(i)
     }
   },
