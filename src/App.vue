@@ -11,13 +11,15 @@
     </div>
     <div>
       <span class="message">{{ message }}</span>
+      <div class="difficulty">
+        <label>
+          <input type="checkbox" v-model="autoplay" /> Play against bot
+        </label>
+        <select v-model="difficulty">
+          <option v-for="(level, title) in levels" :value="level" :key="level">{{ title }}</option>
+        </select>
+      </div>
       <div v-if="ended" role="button" class="restart" @click="restart">play again</div>
-      <label>
-        <input type="checkbox" v-model="autoplay" /> Play against bot
-      </label>
-      <select v-model="difficulty">
-        <option v-for="(level, title) in levels" :value="level" :key="level">{{ title }}</option>
-      </select>
     </div>
   </main>
 </template>
@@ -190,12 +192,15 @@ main {
   display: block;
 }
 
+.difficulty {
+  margin: 1em;
+}
+
 .restart {
   display: inline-block;
   background: #f0f0f0;
   text-transform: uppercase;
   padding: .25em .5em;
   border-radius: .5em;
-  margin-top: 1em;
 }
 </style>
